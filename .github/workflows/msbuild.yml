@@ -27,10 +27,11 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
     strategy:
       matrix:
-        arch: [x86, x64]  # Build both 32-bit and 64-bit
+        os: [windows-latest] #, macos-latest, ubuntu-latest]
+        arch: [x86, x64, arm64]  # Build both 32-bit and 64-bit
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
 
@@ -43,35 +44,59 @@ jobs:
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild `
            /m /p:Configuration=${{env.BUILD_CONFIGURATION}} `
            /p:Platform=${{matrix.arch}} `
            ${{env.SOLUTION_FILE_PATH}}
 
-    - name: Pack_artifacts
+    - name: Prepare and Upload Artifacts
       shell: bash
       run: |
-          if [[ "${{ matrix.arch }}" == "x86" ]]; then
-            SUFFIX="32"
-            7z a goChuViet-win-${{ matrix.arch }}.zip ./Sources/goChuViet/win32/goChuViet/Release/goChuViet${SUFFIX}.exe
-          else
-            SUFFIX="64"
-            7z a goChuViet-win-${{ matrix.arch }}.zip ./Sources/goChuViet/win32/goChuViet/x64/Release/goChuViet${SUFFIX}.exe
-          fi
+        # Determine binary directory based on architecture
+        if [[ "${{matrix.arch}}" == "x86" ]]; then
+          RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/Release"
+          SUFFIX="32"
+        elif [[ "${{matrix.arch}}" == "arm64" ]]; then
+          RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/${{matrix.arch}}/Release"
+          SUFFIX="ARM64"
+        else
+          RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/${{matrix.arch}}/Release"
+          SUFFIX="64"
+        fi
 
-    - name: Upload_CI_artifacts
-      if: github.ref != 'refs/heads/main'
+        # Create artifact names
+        MAIN_ARTIFACT="goChuViet-${{runner.os}}-${{matrix.arch}}.exe"
+        UPDATE_ARTIFACT="goChuVietUpdate-${{runner.os}}-${{matrix.arch}}.exe"
+
+        # Copy files to workspace root
+        cp "$RELEASE_DIR/goChuViet$SUFFIX.exe" "$MAIN_ARTIFACT"
+        cp "$RELEASE_DIR/goChuVietUpdate$SUFFIX.exe" "$UPDATE_ARTIFACT"
+
+        # Set environment variables for upload
+        echo "main_artifact=$MAIN_ARTIFACT" >> $GITHUB_ENV
+        echo "update_artifact=$UPDATE_ARTIFACT" >> $GITHUB_ENV
+
+        # Set upload flag for non-main branches
+        if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+          echo "should_upload=true" >> $GITHUB_ENV
+        fi
+
+    # Separate upload step (needed due to GitHub Actions limitations)
+    - name: Upload CI Artifacts
+      if: env.should_upload == 'true'
       uses: actions/upload-artifact@v4
       with:
-          name: goChuViet-win-${{ matrix.arch }}.zip
-          path: goChuViet-win-${{ matrix.arch }}.zip
+        name: ${{runner.os}}-${{matrix.arch}}
+        path: |
+          ${{env.main_artifact}}
+          ${{env.update_artifact}}
 
       # Option 2: Permanent release (only on main)
     - name: Create_release_assets
       if: github.ref == 'refs/heads/main' && github.event_name == 'release'
       uses: softprops/action-gh-release@v1
       with:
+          name: ${{runner.os}}-${{matrix.arch}}
           files: |
-            goChuViet-win-${{ matrix.arch }}.zip
+            ${{ env.main_artifact }}
+            ${{ env.update_artifact }}

@@ -403,8 +403,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,7,0
- PRODUCTVERSION 2,0,7,0
+ FILEVERSION 2,0,8,0
+ PRODUCTVERSION 2,0,8,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -421,12 +421,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "The GoChuViet Project"
             VALUE "FileDescription", "GoChuViet - Bộ gõ Tiếng Việt nguồn mở"
-            VALUE "FileVersion", "2.0.7.0"
+            VALUE "FileVersion", "2.0.8.0"
             VALUE "InternalName", "GoChuViet.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022 - thuongshoo"
+            VALUE "LegalCopyright", "Copyright (C) 2025 - thuongshoo"
             VALUE "OriginalFilename", "GoChuViet.exe"
             VALUE "ProductName", "GoChuViet"
-            VALUE "ProductVersion", "2.0.7.0"
+            VALUE "ProductVersion", "2.0.8.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -438,7 +438,7 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// std::string Table
+// String Table
 //
 
 STRINGTABLE
@@ -508,11 +508,9 @@ BEGIN
     IDS_STRING_MACRO_AUTO_CAP 
                             "Tự động chuyển qua chữ hoa. VD: định nghĩa ""ko = không"", nếu gõ ""KO"" sẽ thành ""KHÔNG"", gõ ""Ko"" sẽ thành Không"
     IDS_STRING_START_CONSONANT 
-                            "Thay thế nhanh các phụ âm đầu như f, j, w bằng ph, gi, qu.
-Ví dụ: fải→phải, jảng→giảng, wên→quên"
+                            "Thay thế nhanh các phụ âm đầu như f, j, w bằng ph, gi, qu. \nVí dụ: fải→phải, jảng→giảng, wên→quên"
     IDS_STRING_END_CONSONANT 
-                            "Thay thế nhanh các phụ âm cuối như g, h, k bằng ng, nh, ch.
-Ví dụ: trươg→trương, nhah→nhanh, bák→bách"
+                            "Thay thế nhanh các phụ âm cuối như g, h, k bằng ng, nh, ch. \nVí dụ: trươg→trương, nhah→nhanh, bák→bách"
 END
 
 STRINGTABLE
