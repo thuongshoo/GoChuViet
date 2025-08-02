@@ -267,7 +267,7 @@ static void checkSpelling(const bool& forceCheckVowel=false) {
         }
         
         //check next vowel
-        int k = j;
+        size_t k = j;
         VSI = k;
         //August 23rd, 2019: fix case "que't"
         if (CHR(VSI) == KEY_U && k > 0 && k < _spellingEndIndex-1 && CHR(VSI-1) == KEY_Q) {

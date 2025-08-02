@@ -96,7 +96,7 @@ void goChuVietManager::createDesktopShortcut() {
 			wchar_t savePath[MAX_PATH + 10];
 			SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, desktopPath);
 			wsprintf(savePath, _T("%s\\GoChuViet.lnk"), desktopPath);
-			hres = pPersistFile->Save(savePath, TRUE);
+			/*hres = */ pPersistFile->Save(savePath, TRUE);
 			pPersistFile->Release();
 			pShellLink->Release();
 		}

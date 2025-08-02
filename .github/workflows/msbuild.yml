@@ -7,9 +7,9 @@ name: MSBuild
 
 on:
   push:
-    branches: [ "ci" ]
+    branches: [ "ci", "main" ]
   pull_request:
-    branches: [ "ci" ]
+    branches: [ "ci" , "main"]
   release:
     types: [created]
 
@@ -23,7 +23,7 @@ env:
   BUILD_CONFIGURATION: Release
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -55,22 +55,23 @@ jobs:
         # Determine binary directory based on architecture
         if [[ "${{matrix.arch}}" == "x86" ]]; then
           RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/Release"
-          SUFFIX="32"
+          SUFFIX="Win32"
         elif [[ "${{matrix.arch}}" == "arm64" ]]; then
           RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/${{matrix.arch}}/Release"
           SUFFIX="ARM64"
         else
           RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/${{matrix.arch}}/Release"
-          SUFFIX="64"
+          SUFFIX="x64"
         fi
 
         # Create artifact names
         MAIN_ARTIFACT="goChuViet-${{runner.os}}-${{matrix.arch}}.exe"
         UPDATE_ARTIFACT="goChuVietUpdate-${{runner.os}}-${{matrix.arch}}.exe"
 
+        OSNAME="Windows"
         # Copy files to workspace root
-        cp "$RELEASE_DIR/goChuViet$SUFFIX.exe" "$MAIN_ARTIFACT"
-        cp "$RELEASE_DIR/goChuVietUpdate$SUFFIX.exe" "$UPDATE_ARTIFACT"
+        cp "$RELEASE_DIR/goChuViet-$OSNAME-$SUFFIX.exe" "$MAIN_ARTIFACT"
+        cp "$RELEASE_DIR/goChuVietUpdate-$OSNAME-$SUFFIX.exe" "$UPDATE_ARTIFACT"
 
         # Set environment variables for upload
         echo "main_artifact=$MAIN_ARTIFACT" >> $GITHUB_ENV
@@ -91,12 +92,18 @@ jobs:
           ${{env.main_artifact}}
           ${{env.update_artifact}}
 
+    - name: Download Artifacts for Release
+      if: github.event_name == 'release'
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{runner.os}}-${{ matrix.arch }}
+        path: release-artifacts
       # Option 2: Permanent release (only on main)
     - name: Create_release_assets
-      if: github.ref == 'refs/heads/main' && github.event_name == 'release'
+      if: github.event_name == 'release'
       uses: softprops/action-gh-release@v1
       with:
           name: ${{runner.os}}-${{matrix.arch}}
           files: |
-            ${{ env.main_artifact }}
-            ${{ env.update_artifact }}
+            release-artifacts/${{ env.main_artifact }}
+            release-artifacts/${{ env.update_artifact }}

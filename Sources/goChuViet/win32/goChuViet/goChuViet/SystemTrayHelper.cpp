@@ -180,6 +180,7 @@ HWND SystemTrayHelper::createFakeWindow(const HINSTANCE & hIns) {
 	wcex.lpszClassName = APP_CLASS;
 	wcex.hIconSm = NULL;
 	ATOM atom = RegisterClassExW(&wcex);
+	if (atom == 0) return NULL;
 	HWND hWnd = CreateWindowW(APP_CLASS, _T(""), WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hIns, nullptr);
 	if (!hWnd) {

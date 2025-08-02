@@ -1,4 +1,10 @@
-# OpenKey Change Log
+# Lịch sử thay đổi (Change Log)
+##### GoChuViet Windows:
+##### Phiên bản 2.0.8
+- Hỗ trợ Windows ARM64
+- Biên dịch tự động bằng máy của Github nên sẽ yên tâm hơn, không còn lo bị virus.
+- Cải tiến chức năng cập nhật
+- Sửa 1 số cảnh báo từ Visual Studio.
 
 ##### OpenKey for Linux: (in development)
 

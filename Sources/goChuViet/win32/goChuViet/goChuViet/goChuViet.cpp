@@ -75,7 +75,7 @@ void goChuVietFree() {
 }
 
 void goChuVietInit() {	
-	goChuVietHelper::getRegInt((LPCTSTR)"vLanguage", eVietnamese);
+	goChuVietHelper::getRegInt((LPCTSTR)L"vLanguage", eVietnamese);
 	APP_GET_DATA(vInputType, 0);
 	vFreeMark = 0;
 	APP_GET_DATA(vCodeTable, 0);

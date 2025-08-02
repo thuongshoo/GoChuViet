@@ -28,6 +28,7 @@ protected:
 	virtual INT_PTR eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 public:
 	BaseDialog(const HINSTANCE& hInstance, const int& resourceId);
+	virtual ~BaseDialog() = default;
 	void show();
 	void bringOnTop();
 	virtual void fillData() = 0;

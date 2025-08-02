@@ -83,13 +83,13 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
 
-IDD_DIALOG_UPDATER DIALOGEX 0, 0, 260, 88
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOG1 DIALOGEX 0, 0, 261, 88
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Cập nhật GoChuViet"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CTEXT           "Đang cập nhật phiên bản mới!",IDC_STATIC,7,33,246,8
-    CTEXT           "Vui lòng đợi trong giây lát...",IDC_STATIC,7,45,246,8
+    CTEXT           "Đang cập nhật phiên bản mới!",IDC_STATIC,7,33,247,8
+    CTEXT           "Vui lòng đợi trong giây lát...",IDC_STATIC,7,45,247,8
 END
 
 
@@ -109,10 +109,10 @@ BEGIN
         BOTTOMMARGIN, 55
     END
 
-    IDD_DIALOG_UPDATER, DIALOG
+    IDD_DIALOG1, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 253
+        RIGHTMARGIN, 254
         TOPMARGIN, 7
         BOTTOMMARGIN, 81
     END

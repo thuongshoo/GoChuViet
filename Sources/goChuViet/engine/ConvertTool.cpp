@@ -31,7 +31,7 @@ static bool findKeyCode(const Uint32& charCode, const Uint8& code, int& j, int& 
         for (size_t z = 0; z < it->second.size(); z++) {
             if (charCode == it->second[z]) {
                 j = it->first;
-                k = z;
+                k = (decltype(k)) z;
                 return true;
             }//end if
         }
