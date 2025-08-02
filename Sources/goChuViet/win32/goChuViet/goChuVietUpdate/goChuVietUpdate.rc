@@ -157,8 +157,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,0,3
+ PRODUCTVERSION 1,0,0,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -175,12 +175,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "The GoChuViet Project"
             VALUE "FileDescription", "Update Helper for GoChuViet"
-            VALUE "FileVersion", "1.0.0.2"
+            VALUE "FileVersion", "1.0.0.3"
             VALUE "InternalName", "goChuVietUpdate.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022"
+            VALUE "LegalCopyright", "Copyright (C) 2025"
             VALUE "OriginalFilename", "goChuVietUpdate.exe"
             VALUE "ProductName", "GoChuViet Auto Update"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "1.0.0.3"
         END
     END
     BLOCK "VarFileInfo"
@@ -192,7 +192,7 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// std::string Table
+// String Table
 //
 
 STRINGTABLE

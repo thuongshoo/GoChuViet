@@ -1,0 +1,102 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: MSBuild
+
+on:
+  push:
+    branches: [ "ci" ]
+  pull_request:
+    branches: [ "ci" ]
+  release:
+    types: [created]
+
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: ./Sources/goChuViet/win32/goChuViet/goChuViet.sln
+
+  # Configuration type to build.
+  # You can convert this to a build matrix if you need coverage of multiple configuration types.
+  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest] #, macos-latest, ubuntu-latest]
+        arch: [x86, x64, arm64]  # Build both 32-bit and 64-bit
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Restore NuGet packages
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild `
+           /m /p:Configuration=${{env.BUILD_CONFIGURATION}} `
+           /p:Platform=${{matrix.arch}} `
+           ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Prepare and Upload Artifacts
+      shell: bash
+      run: |
+        # Determine binary directory based on architecture
+        if [[ "${{matrix.arch}}" == "x86" ]]; then
+          RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/Release"
+          SUFFIX="32"
+        elif [[ "${{matrix.arch}}" == "arm64" ]]; then
+          RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/${{matrix.arch}}/Release"
+          SUFFIX="ARM64"
+        else
+          RELEASE_DIR="./Sources/goChuViet/win32/goChuViet/${{matrix.arch}}/Release"
+          SUFFIX="64"
+        fi
+
+        # Create artifact names
+        MAIN_ARTIFACT="goChuViet-${{runner.os}}-${{matrix.arch}}.exe"
+        UPDATE_ARTIFACT="goChuVietUpdate-${{runner.os}}-${{matrix.arch}}.exe"
+
+        # Copy files to workspace root
+        cp "$RELEASE_DIR/goChuViet$SUFFIX.exe" "$MAIN_ARTIFACT"
+        cp "$RELEASE_DIR/goChuVietUpdate$SUFFIX.exe" "$UPDATE_ARTIFACT"
+
+        # Set environment variables for upload
+        echo "main_artifact=$MAIN_ARTIFACT" >> $GITHUB_ENV
+        echo "update_artifact=$UPDATE_ARTIFACT" >> $GITHUB_ENV
+
+        # Set upload flag for non-main branches
+        if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+          echo "should_upload=true" >> $GITHUB_ENV
+        fi
+
+    # Separate upload step (needed due to GitHub Actions limitations)
+    - name: Upload CI Artifacts
+      if: env.should_upload == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{runner.os}}-${{matrix.arch}}
+        path: |
+          ${{env.main_artifact}}
+          ${{env.update_artifact}}
+
+      # Option 2: Permanent release (only on main)
+    - name: Create_release_assets
+      if: github.ref == 'refs/heads/main' && github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+          name: ${{runner.os}}-${{matrix.arch}}
+          files: |
+            ${{ env.main_artifact }}
+            ${{ env.update_artifact }}
